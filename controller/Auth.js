@@ -6,15 +6,15 @@ admin.initializeApp({
 const db = admin.firestore();
 
 exports.signup = async (req, res, next) => {
-  const { user, uid } = req.body;
-  if (user === "client") {
+  const { userType, uid } = req.body;
+  if (userType === "client") {
     const client = await db.collection("Clients").doc(req.body.uid).get();
     console.log(client.exists);
     if (client.exists) {
       console.log("already");
       res.status(500).send({
         success: false,
-        message: "client already exists.",
+        message: "User already exists.",
       });
     } else {
       console.log("Signing up");
@@ -32,7 +32,7 @@ exports.signup = async (req, res, next) => {
       });
     }
   }
-  if (user === "serviceProvider") {
+  if (userType === "serviceProvider") {
     console.log("serviceProvider");
     const serviceprovider = await db
       .collection("ServiceProvider")
@@ -41,7 +41,7 @@ exports.signup = async (req, res, next) => {
     if (serviceprovider.exists) {
       res.status(500).send({
         success: false,
-        message: "Service Provider already exists.",
+        message: "User already exists.",
       });
     } else {
       console.log("Signing up");
@@ -62,8 +62,9 @@ exports.signup = async (req, res, next) => {
 };
 
 exports.signin = async (req, res, next) => {
-  const { uid, fcmToken, user } = req.body;
-  if (user === "client") {
+  const { uid, fcmToken, userType } = req.body;
+  if (userType === "client") {
+    console.log("client")
     const client = await db.collection("Clients").doc(uid).get();
     if (client.exists) {
       try {
@@ -84,11 +85,11 @@ exports.signin = async (req, res, next) => {
     } else {
       res.status(500).send({
         success: false,
-        message: "client not Found",
+        message: "User not Found",
       });
     }
   }
-  if (user === "serviceProvider") {
+  if (userType === "serviceProvider") {
     const serviceprovider = await db
       .collection("ServiceProvider")
       .doc(uid)
@@ -112,15 +113,15 @@ exports.signin = async (req, res, next) => {
     } else {
       res.status(500).send({
         success: false,
-        message: "Service Provider not Found",
+        message: "User not Found",
       });
     }
   }
 };
 
 exports.logout = async (req, res, next) => {
-  const { uid, user } = req.body;
-  if (user === "client") {
+  const { uid, userType } = req.body;
+  if (userType === "client") {
     const client = await db.collection("Clients").doc(uid).get();
     if (client.exists) {
       if (client.data().fcmToken === req.body.fcmToken) {
@@ -152,7 +153,7 @@ exports.logout = async (req, res, next) => {
       });
     }
   }
-  if (user === "serviceProvider") {
+  if (userType === "serviceProvider") {
     console.log("fcmToken");
     const serviceprovider = await db.collection("ServiceProvider").doc(uid).get();
     if (serviceprovider.exists) {
