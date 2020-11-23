@@ -17,9 +17,6 @@ exports.signup = async (req, res, next) => {
         .collection("Clients")
         .doc(req.body.uid)
         .set({ ...req.body })
-        .catch((err) => {
-          console.log("Error setting", err);
-        });
         return res.status(200).send({
         success: true,
         message: "Successfully signed up.",
@@ -34,6 +31,7 @@ exports.signup = async (req, res, next) => {
       .doc(req.body.uid)
       .get();
     if (serviceprovider.exists) {
+      console.log("already exist ")
       return res.status(400).send({
         success: false,
         message: "User already exists.",
@@ -49,8 +47,7 @@ exports.signup = async (req, res, next) => {
         });
         return res.status(200).send({
         success: true,
-        message: "Successfully signed up.",
-        data: req.body,
+        message: "Successfully signed up."
       });
     }
   }
